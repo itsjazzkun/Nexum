@@ -17,6 +17,11 @@ app.use(
   }),
 );
 
+//import routes
+import heathCheckRouter from "./routes/healthcheck.routes.js";
+
+app.use("/api/v1/healthcheck/",heathCheckRouter);
+
 app.get("/", (req, res) => {
   res.send("welcome to nexum");
 });
