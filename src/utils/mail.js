@@ -1,47 +1,43 @@
 import Mailgen from "mailgen";
-import nodemailer from "nodemailer"
+import nodemailer from "nodemailer";
 
 const sendEmail = async (options) => {
-    const mailGenerator = new Mailgen({
-        theme:"deafult",
-        product:{
-            name: "Nexum",
-            link:"https://tasknexum.com"//this does not exists
-        }
-    })
-  
-     const emailTextual = mailGenerator.generatePlaintext(
-       options.mailgenContent,
-     )
-      const emailHtml = mailGenerator.generate(
-        options.mailgenContent,
-      )
+  const mailGenerator = new Mailgen({
+    theme: "default",
+    product: {
+      name: "Nexum",
+      link: "https://tasknexum.com", //this does not exists
+    },
+  });
 
-      const transpoter = nodemailer.createTransport({
-        host: process.env.MAILTRAP_SMTP_HOST,
-        port: process.env.MAILTRAP_SMTP_PORT,
-        auth:{
-            user: process.env.MAILTRAP_SMTP_USER,
-            pass: process.env.MAILTRAP_SMTP_PASS
-        }
-})
-   const mail ={
+  const emailTextual = mailGenerator.generatePlaintext(options.mailgenContent);
+  const emailHtml = mailGenerator.generate(options.mailgenContent);
+
+  const transpoter = nodemailer.createTransport({
+    host: process.env.MAILTRAP_SMTP_HOST,
+    port: process.env.MAILTRAP_SMTP_PORT,
+    auth: {
+      user: process.env.MAILTRAP_SMTP_USER,
+      pass: process.env.MAILTRAP_SMTP_PASS,
+    },
+  });
+  const mail = {
     from: "mail.nexum@example.com",
     to: options.email,
     subject: options.subject,
     text: emailTextual,
-    html: emailHtml
-   }
+    html: emailHtml,
+  };
 
-   try{
-    await transpoter.sendMail(mail)
-   }catch (error){
-    console.error("Email service failed silently, Make sure your provided MAILTRAP credentails in .env file is correct");
+  try {
+    await transpoter.sendMail(mail);
+  } catch (error) {
+    console.error(
+      "Email service failed silently, Make sure your provided MAILTRAP credentails in .env file is correct",
+    );
     console.error("Error", error);
-    
-   }   
-}
-
+  }
+};
 
 const emailVerificationMailgenContent = (username, verificationUrl) => {
   return {
@@ -68,7 +64,8 @@ const forgotPasswordMailgenContent = (username, passresetUrl) => {
       name: username,
       intro: "We got a reuqest to reset the password for your account",
       action: {
-        instructions: "To reset the password please click the button below or link",
+        instructions:
+          "To reset the password please click the button below or link",
         button: {
           color: "#2500bb",
           text: "Reset Password",
@@ -80,9 +77,8 @@ const forgotPasswordMailgenContent = (username, passresetUrl) => {
     },
   };
 };
-export{
-    emailVerificationMailgenContent,
-    forgotPasswordMailgenContent,
-    sendEmail,
+export {
+  emailVerificationMailgenContent,
+  forgotPasswordMailgenContent,
+  sendEmail,
 };
-
