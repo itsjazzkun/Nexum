@@ -12,3 +12,5 @@ router.route("/login").post(userLoginValidator(),validate, login);
 router.route("/logout").post(verifyJWT,logoutUser);
 
 export default router;
+
+//routes for forgot password and reset password
