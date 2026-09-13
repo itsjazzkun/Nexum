@@ -1,409 +1,104 @@
-
-# Nexum
-
-<p align="center">
-  <img src="https://skillicons.dev/icons?i=nodejs,express,mongodb,js,jwt,bcrypt" />
-</p>
+# Nexum — Project Management Backend
 
 <p align="center">
-  A RESTful backend API for collaborative project management.
+  <img src="https://skillicons.dev/icons?i=nodejs,express,mongodb,js" />
 </p>
 
----
-
-## 🧩 Overview
-
-**Nexum** is a RESTful backend API built for collaborative project management.
-
-It provides the backend infrastructure required to manage users, projects, project members, roles, tasks, subtasks, notes, and file attachments.
-
-The application is built using Node.js and Express, with MongoDB and Mongoose handling data persistence.
-
-Authentication is implemented using JWT access and refresh tokens, with email verification, password recovery, password management, request validation, cookies, and role-based authorization.
-
-The API follows a modular architecture separating routes, controllers, models, middleware, validators, database configuration, and utilities.
+RESTful backend API for collaborative project management with authentication, role-based access control, projects, tasks, subtasks, notes, and file attachments.
 
 ---
 
-## ⚙️ Architecture
+## Overview
 
-| Component | Purpose |
-| --- | --- |
-| **Node.js** | Runtime environment |
-| **Express.js** | REST API framework |
-| **MongoDB** | Primary database |
-| **Mongoose** | Database modeling and queries |
-| **JWT** | Authentication and authorization |
-| **bcrypt** | Password hashing |
-| **Nodemailer** | Email delivery |
-| **Mailgen** | Email generation |
-| **Express Validator** | Request validation |
-| **Cookie Parser** | Cookie handling |
-| **CORS** | Cross-origin request handling |
-| **Multer** | File upload handling |
+Nexum is a RESTful backend service for collaborative project management.
+
+The API provides user authentication, project management, team member management, role-based permissions, task management, subtasks, project notes, and file attachments.
+
+The backend is built with Node.js and Express, using MongoDB with Mongoose for persistence.
+
+The complete product requirements, endpoint specification, permission matrix, data models, and security requirements are defined in the [PRD](./PRD.md).
 
 ---
 
-## 🔄 Flow
+## Architecture
+
+| Component         | Purpose                             |
+| ----------------- | ----------------------------------- |
+| Node.js           | JavaScript runtime                  |
+| Express.js        | REST API framework                  |
+| MongoDB           | Primary database                    |
+| Mongoose          | MongoDB ODM                         |
+| JWT               | Authentication and token management |
+| bcrypt            | Password hashing                    |
+| Nodemailer        | Email delivery                      |
+| Mailgen           | Email generation                    |
+| Express Validator | Request validation                  |
+| Multer            | File uploads                        |
+| Cookie Parser     | Cookie handling                     |
+| CORS              | Cross-origin requests               |
+
+---
+
+## Flow
 
 ```text
-                         ┌──────────────┐
-                         │    Client    │
-                         │  Web / App   │
-                         └──────┬───────┘
-                                │
-                                ▼
-                         ┌──────────────┐
-                         │   Express    │
-                         │   REST API   │
-                         └──────┬───────┘
-                                │
-              ┌─────────────────┼─────────────────┐
-              │                 │                 │
-              ▼                 ▼                 ▼
-        ┌──────────┐      ┌──────────┐      ┌──────────┐
-        │   Auth   │      │ Projects │      │  Tasks   │
-        │  Routes  │      │  Routes  │      │  Routes  │
-        └────┬─────┘      └────┬─────┘      └────┬─────┘
-             │                 │                 │
-             └─────────────────┼─────────────────┘
-                               │
-                               ▼
-                       ┌───────────────┐
-                       │  Middleware   │
-                       │               │
-                       │ JWT / RBAC    │
-                       │ Validation    │
-                       └───────┬───────┘
-                               │
-                               ▼
-                       ┌───────────────┐
-                       │  Controllers  │
-                       └───────┬───────┘
-                               │
-                               ▼
-                       ┌───────────────┐
-                       │   Mongoose    │
-                       └───────┬───────┘
-                               │
-                               ▼
-                       ┌───────────────┐
-                       │    MongoDB    │
-                       └───────────────┘
-````
-
----
-
-## ✨ Features
-
-### 🔐 Authentication
-
-Nexum provides a complete authentication system:
-
-* User registration
-* User login
-* JWT access tokens
-* JWT refresh tokens
-* Logout
-* Current authenticated user
-* Change password
-* Email verification
-* Resend email verification
-* Forgot password
-* Password reset
-* Password hashing with bcrypt
-* Cookie-based authentication
-
-Authentication endpoints are available under:
-
-```text
-/api/v1/auth/
+     ┌─────────┐     ┌──────────┐     ┌────────────┐
+     │ Client  │────▶│ Express  │────▶│ Middleware │
+     │         │     │   API    │     │ JWT / RBAC │
+     └─────────┘     └──────────┘     └──────┬─────┘
+                                             │
+                              ┌──────────────┼──────────────┐
+                              │              │              │
+                              ▼              ▼              ▼
+                         ┌─────────┐   ┌──────────┐   ┌─────────┐
+                         │  Auth   │   │ Projects │   │  Tasks  │
+                         └────┬────┘   └─────┬────┘   └────┬────┘
+                              │              │              │
+                              └──────────────┼──────────────┘
+                                             │
+                                             ▼
+                                      ┌─────────────┐
+                                      │ Controllers │
+                                      └──────┬──────┘
+                                             │
+                                             ▼
+                                      ┌─────────────┐
+                                      │  Mongoose   │
+                                      └──────┬──────┘
+                                             │
+                                             ▼
+                                      ┌─────────────┐
+                                      │   MongoDB   │
+                                      └─────────────┘
 ```
 
 ---
 
-### 🛡️ Role-Based Access Control
+## Prerequisites
 
-Nexum implements role-based permissions across the application.
-
-| Role            | Access                       |
-| --------------- | ---------------------------- |
-| `admin`         | Full system access           |
-| `project_admin` | Project-level administration |
-| `member`        | Project member access        |
-
-```text
-                         ADMIN
-                           │
-             ┌─────────────┼─────────────┐
-             │             │             │
-             ▼             ▼             ▼
-         Projects       Members         Tasks
-             │                           │
-             └─────────────┬─────────────┘
-                           │
-                           ▼
-                    PROJECT ADMIN
-                           │
-                    ┌──────┴──────┐
-                    ▼             ▼
-                  Tasks        Subtasks
-                    │
-                    ▼
-                  MEMBER
-                    │
-              ┌─────┴─────┐
-              ▼           ▼
-           Projects      Tasks
-
+- Node.js
+- npm
+- MongoDB
+- SMTP provider
 
 ---
 
-## 📁 Project Management
+## Quick Start
 
-Projects are the primary organizational units within Nexum.
+### 1. Clone Repository
 
-Implemented functionality includes:
-
-* Create projects
-* Retrieve projects
-* Retrieve project details
-* Update projects
-* Delete projects
-* Project aggregation pipelines
-* Project member management
-* Add project members
-* Remove project members
-* Update member roles
-* Project-level permissions
-* Project request validation
-
----
-
-## 👥 Project Members
-
-Projects support multiple users with different permission levels.
-
-Members can be associated with projects and assigned appropriate roles.
-
-Supported operations include:
-
-* List project members
-* Add members
-* Remove members
-* Update member roles
-* Validate member access
-* Enforce project permissions
-
----
-
-## 📋 Task Management
-
-Tasks represent individual units of work within projects.
-
-A task can contain:
-
-* Title
-* Description
-* Assignee
-* Status
-* Subtasks
-* Attachments
-* Project reference
-
-Tasks are associated with projects and users through MongoDB relationships.
-
-Nexum uses Mongoose population and aggregation pipelines to retrieve related project and user information.
-
-### Task Lifecycle
-
-```text
-┌──────────┐
-│   TODO   │
-└────┬─────┘
-     │
-     ▼
-┌─────────────┐
-│ IN_PROGRESS │
-└──────┬──────┘
-       │
-       ▼
-┌──────────┐
-│   DONE   │
-└──────────┘
+```bash
+git clone https://github.com/itsjazzkun/Nexum.git
+cd Nexum
 ```
 
-Implemented functionality includes:
+### 2. Install Dependencies
 
-* Create tasks
-* Retrieve all project tasks
-* Retrieve individual tasks
-* Update tasks
-* Delete tasks
-* Task population
-* Task aggregation
-* Task permissions
-* Task controller architecture
-* Task route architecture
-
----
-
-## ☑️ Subtasks
-
-Tasks can contain smaller units of work through subtasks.
-
-Supported functionality includes:
-
-* Create subtasks
-* Retrieve subtasks
-* Update subtasks
-* Delete subtasks
-* Associate subtasks with tasks
-* Track subtask status
-
----
-
-## 📎 File Uploads
-
-Nexum uses Multer for handling file uploads.
-
-The upload system provides the backend foundation for attaching files to tasks and other project resources.
-
-```text
-Client
-  │
-  │ multipart/form-data
-  ▼
-Multer
-  │
-  ▼
-Upload Middleware
-  │
-  ▼
-Controller
-  │
-  ▼
-Resource
+```bash
+npm install
 ```
 
----
-
-## 📝 Project Notes
-
-Projects support persistent notes for documentation and collaboration.
-
-Implemented operations include:
-
-* Create notes
-* Retrieve notes
-* Update notes
-* Delete notes
-* Project-level note access
-* Note permissions
-
----
-
-## 🔌 API Reference
-
-All API endpoints are versioned under:
-
-```text
-/api/v1
-```
-
----
-
-### 🔐 Authentication
-
-| Method | Endpoint                                       | Description                    |
-| ------ | ---------------------------------------------- | ------------------------------ |
-| `POST` | `/api/v1/auth/register`                        | Register a new user            |
-| `POST` | `/api/v1/auth/login`                           | Authenticate user              |
-| `POST` | `/api/v1/auth/logout`                          | Logout authenticated user      |
-| `POST` | `/api/v1/auth/refresh-token`                   | Refresh access token           |
-| `POST` | `/api/v1/auth/change-password`                 | Change password                |
-| `POST` | `/api/v1/auth/forgot-password`                 | Request password reset         |
-| `POST` | `/api/v1/auth/reset-password/:resetToken`      | Reset password                 |
-| `POST` | `/api/v1/auth/resend-email-verification`       | Resend verification email      |
-| `GET`  | `/api/v1/auth/current-user`                    | Get current authenticated user |
-| `GET`  | `/api/v1/auth/verify-email/:verificationToken` | Verify email                   |
-
----
-
-### 📁 Projects
-
-| Method   | Endpoint                                      | Description                  |
-| -------- | --------------------------------------------- | ---------------------------- |
-| `GET`    | `/api/v1/projects/`                           | Retrieve accessible projects |
-| `POST`   | `/api/v1/projects/`                           | Create project               |
-| `GET`    | `/api/v1/projects/:projectId`                 | Retrieve project             |
-| `PUT`    | `/api/v1/projects/:projectId`                 | Update project               |
-| `DELETE` | `/api/v1/projects/:projectId`                 | Delete project               |
-| `GET`    | `/api/v1/projects/:projectId/members`         | Retrieve project members     |
-| `POST`   | `/api/v1/projects/:projectId/members`         | Add project member           |
-| `PUT`    | `/api/v1/projects/:projectId/members/:userId` | Update member role           |
-| `DELETE` | `/api/v1/projects/:projectId/members/:userId` | Remove project member        |
-
----
-
-### 📋 Tasks
-
-| Method   | Endpoint                                      | Description            |
-| -------- | --------------------------------------------- | ---------------------- |
-| `GET`    | `/api/v1/tasks/:projectId`                    | Retrieve project tasks |
-| `POST`   | `/api/v1/tasks/:projectId`                    | Create task            |
-| `GET`    | `/api/v1/tasks/:projectId/t/:taskId`          | Retrieve task          |
-| `PUT`    | `/api/v1/tasks/:projectId/t/:taskId`          | Update task            |
-| `DELETE` | `/api/v1/tasks/:projectId/t/:taskId`          | Delete task            |
-| `POST`   | `/api/v1/tasks/:projectId/t/:taskId/subtasks` | Create subtask         |
-| `PUT`    | `/api/v1/tasks/:projectId/st/:subTaskId`      | Update subtask         |
-| `DELETE` | `/api/v1/tasks/:projectId/st/:subTaskId`      | Delete subtask         |
-
----
-
-### 📝 Notes
-
-| Method   | Endpoint                             | Description            |
-| -------- | ------------------------------------ | ---------------------- |
-| `GET`    | `/api/v1/notes/:projectId`           | Retrieve project notes |
-| `POST`   | `/api/v1/notes/:projectId`           | Create note            |
-| `GET`    | `/api/v1/notes/:projectId/n/:noteId` | Retrieve note          |
-| `PUT`    | `/api/v1/notes/:projectId/n/:noteId` | Update note            |
-| `DELETE` | `/api/v1/notes/:projectId/n/:noteId` | Delete note            |
-
----
-
-### 💚 Health Check
-
-| Method | Endpoint               | Description      |
-| ------ | ---------------------- | ---------------- |
-| `GET`  | `/api/v1/healthcheck/` | Check API health |
-
----
-
-## 🔒 Security
-
-Nexum implements multiple layers of security throughout the API.
-
-* JWT authentication
-* Access and refresh tokens
-* bcrypt password hashing
-* Role-based authorization
-* Request validation
-* Email verification
-* Password reset
-* Protected routes
-* Cookie handling
-* CORS configuration
-* Project-level permissions
-* Task-level permissions
-* File upload handling
-
-Protected requests pass through authentication and authorization middleware before reaching the corresponding controller.
-
----
-
-## 🌍 Environment Variables
+### 3. Environment Setup
 
 Create a `.env` file in the project root:
 
@@ -426,51 +121,19 @@ MAIL_USER=your_email
 MAIL_PASSWORD=your_email_password
 ```
 
-Never commit `.env` files or production credentials to version control.
-
----
-
-## 🧰 Prerequisites
-
-* Node.js 20+
-* npm
-* MongoDB
-* SMTP / email provider
-
----
-
-## 🚀 Quick Start
-
-### Clone
-
-```bash
-git clone https://github.com/itsjazzkun/Nexum.git
-cd Nexum
-```
-
-### Install Dependencies
-
-```bash
-npm install
-```
-
-### Configure Environment
-
-Create a `.env` file in the project root and configure the required environment variables.
-
-### Development
+### 4. Development
 
 ```bash
 npm run dev
 ```
 
-### Production
+### 5. Production
 
 ```bash
 npm start
 ```
 
-The API will be available at:
+The API runs on:
 
 ```text
 http://localhost:3000
@@ -478,31 +141,23 @@ http://localhost:3000
 
 ---
 
-## 🗂️ Project Structure
+## Project Structure
 
 ```text
 Nexum/
-│
 ├── public/
-│   └── images/
+│   └── images/                  # Uploaded files
 │
 ├── src/
-│   ├── controllers/
-│   │
-│   ├── db/
-│   │
-│   ├── middlewares/
-│   │
-│   ├── models/
-│   │
-│   ├── routes/
-│   │
-│   ├── utils/
-│   │
-│   ├── validators/
-│   │
-│   ├── app.js
-│   └── index.js
+│   ├── controllers/             # Request handlers
+│   ├── db/                      # Database configuration
+│   ├── middlewares/             # Authentication / authorization
+│   ├── models/                  # Mongoose models
+│   ├── routes/                  # API routes
+│   ├── utils/                   # Shared utilities
+│   ├── validators/              # Request validators
+│   ├── app.js                   # Express application
+│   └── index.js                 # Application entry point
 │
 ├── .gitignore
 ├── package.json
@@ -513,262 +168,138 @@ Nexum/
 
 ---
 
-## 🔄 Request Lifecycle
+## API Reference
 
-```text
-Client Request
-      │
-      ▼
-Express Router
-      │
-      ▼
-Request Validation
-      │
-      ▼
-JWT Authentication
-      │
-      ▼
-Role Authorization
-      │
-      ▼
-Controller
-      │
-      ▼
-Mongoose
-      │
-      ▼
-MongoDB
-      │
-      ▼
-JSON Response
-```
+### Authentication
 
----
+| Method | Endpoint                                       | Description               |
+| ------ | ---------------------------------------------- | ------------------------- |
+| `POST` | `/api/v1/auth/register`                        | User registration         |
+| `POST` | `/api/v1/auth/login`                           | User authentication       |
+| `POST` | `/api/v1/auth/logout`                          | User logout               |
+| `GET`  | `/api/v1/auth/current-user`                    | Get current user          |
+| `POST` | `/api/v1/auth/change-password`                 | Change password           |
+| `POST` | `/api/v1/auth/refresh-token`                   | Refresh access token      |
+| `GET`  | `/api/v1/auth/verify-email/:verificationToken` | Verify email              |
+| `POST` | `/api/v1/auth/forgot-password`                 | Request password reset    |
+| `POST` | `/api/v1/auth/reset-password/:resetToken`      | Reset password            |
+| `POST` | `/api/v1/auth/resend-email-verification`       | Resend verification email |
 
-## 🏗️ Backend Architecture
+### Projects
 
-Nexum follows a modular backend structure:
+| Method   | Endpoint                                      | Description              |
+| -------- | --------------------------------------------- | ------------------------ |
+| `GET`    | `/api/v1/projects/`                           | List accessible projects |
+| `POST`   | `/api/v1/projects/`                           | Create project           |
+| `GET`    | `/api/v1/projects/:projectId`                 | Get project details      |
+| `PUT`    | `/api/v1/projects/:projectId`                 | Update project           |
+| `DELETE` | `/api/v1/projects/:projectId`                 | Delete project           |
+| `GET`    | `/api/v1/projects/:projectId/members`         | List project members     |
+| `POST`   | `/api/v1/projects/:projectId/members`         | Add project member       |
+| `PUT`    | `/api/v1/projects/:projectId/members/:userId` | Update member role       |
+| `DELETE` | `/api/v1/projects/:projectId/members/:userId` | Remove project member    |
 
-```text
-                    ┌───────────────┐
-                    │    Routes     │
-                    └───────┬───────┘
-                            │
-                            ▼
-                    ┌───────────────┐
-                    │  Middleware   │
-                    └───────┬───────┘
-                            │
-                            ▼
-                    ┌───────────────┐
-                    │  Controllers  │
-                    └───────┬───────┘
-                            │
-                            ▼
-                    ┌───────────────┐
-                    │    Models     │
-                    └───────┬───────┘
-                            │
-                            ▼
-                    ┌───────────────┐
-                    │    MongoDB    │
-                    └───────────────┘
-```
+### Tasks
 
-The architecture separates routing, validation, authentication, authorization, business logic, and persistence into dedicated modules.
+| Method   | Endpoint                                      | Description        |
+| -------- | --------------------------------------------- | ------------------ |
+| `GET`    | `/api/v1/tasks/:projectId`                    | List project tasks |
+| `POST`   | `/api/v1/tasks/:projectId`                    | Create task        |
+| `GET`    | `/api/v1/tasks/:projectId/t/:taskId`          | Get task details   |
+| `PUT`    | `/api/v1/tasks/:projectId/t/:taskId`          | Update task        |
+| `DELETE` | `/api/v1/tasks/:projectId/t/:taskId`          | Delete task        |
+| `POST`   | `/api/v1/tasks/:projectId/t/:taskId/subtasks` | Create subtask     |
+| `PUT`    | `/api/v1/tasks/:projectId/st/:subTaskId`      | Update subtask     |
+| `DELETE` | `/api/v1/tasks/:projectId/st/:subTaskId`      | Delete subtask     |
+
+### Notes
+
+| Method   | Endpoint                             | Description        |
+| -------- | ------------------------------------ | ------------------ |
+| `GET`    | `/api/v1/notes/:projectId`           | List project notes |
+| `POST`   | `/api/v1/notes/:projectId`           | Create note        |
+| `GET`    | `/api/v1/notes/:projectId/n/:noteId` | Get note details   |
+| `PUT`    | `/api/v1/notes/:projectId/n/:noteId` | Update note        |
+| `DELETE` | `/api/v1/notes/:projectId/n/:noteId` | Delete note        |
+
+### Health Check
+
+| Method | Endpoint               | Description          |
+| ------ | ---------------------- | -------------------- |
+| `GET`  | `/api/v1/healthcheck/` | System health status |
 
 ---
 
-## 📊 Project Status
+## Permission Matrix
 
-### ✅ Completed
-
-#### Authentication
-
-* [x] User registration
-* [x] User login
-* [x] JWT authentication
-* [x] Access tokens
-* [x] Refresh tokens
-* [x] Logout
-* [x] Current user
-* [x] Change password
-* [x] Email verification
-* [x] Resend verification
-* [x] Forgot password
-* [x] Password reset
-
-#### Projects
-
-* [x] Project model
-* [x] Project controllers
-* [x] Create projects
-* [x] Retrieve projects
-* [x] Update projects
-* [x] Delete projects
-* [x] Project aggregation
-* [x] Project validators
-* [x] Project routes
-* [x] Project permissions
-* [x] Project member management
-
-#### Roles & Permissions
-
-* [x] Admin role
-* [x] Project admin role
-* [x] Member role
-* [x] Role-based authorization
-* [x] Project-level permissions
-* [x] Protected routes
-
-#### Tasks
-
-* [x] Task controller architecture
-* [x] Task creation
-* [x] Retrieve all tasks
-* [x] Task population
-* [x] Task retrieval by ID
-* [x] Task aggregation pipeline
-* [x] Task routes
-* [x] Task permissions
-
-#### Files
-
-* [x] Multer integration
-* [x] Backend upload handling
-* [x] Task attachment foundation
-
-#### Subtasks
-
-* [x] Subtask creation
-* [x] Subtask retrieval
-* [x] Subtask updates
-* [x] Subtask deletion
-* [x] Subtask status handling
-
-#### Notes
-
-* [x] Note model
-* [x] Create notes
-* [x] Retrieve notes
-* [x] Update notes
-* [x] Delete notes
-* [x] Note permissions
-
-#### Infrastructure
-
-* [x] Express application setup
-* [x] MongoDB connection
-* [x] Mongoose integration
-* [x] API versioning
-* [x] Middleware architecture
-* [x] Controller architecture
-* [x] Route architecture
-* [x] Validator architecture
-* [x] Health-check endpoint
+| Feature                    | Admin | Project Admin | Member |
+| -------------------------- | ----- | ------------- | ------ |
+| Create Project             | ✓     | ✗             | ✗      |
+| Update/Delete Project      | ✓     | ✗             | ✗      |
+| Manage Project Members     | ✓     | ✗             | ✗      |
+| Create/Update/Delete Tasks | ✓     | ✓             | ✗      |
+| View Tasks                 | ✓     | ✓             | ✓      |
+| Update Subtask Status      | ✓     | ✓             | ✓      |
+| Create/Delete Subtasks     | ✓     | ✓             | ✗      |
+| Create/Update/Delete Notes | ✓     | ✗             | ✗      |
+| View Notes                 | ✓     | ✓             | ✓      |
 
 ---
 
-## 🗺️ Roadmap
+## Security
 
-Nexum's planned backend functionality has been implemented across authentication, project management, role-based permissions, task management, subtasks, file uploads, notes, and supporting infrastructure.
-
-### 🔐 Authentication
-
-* [x] User registration
-* [x] User login
-* [x] JWT authentication
-* [x] Access token system
-* [x] Refresh token system
-* [x] Logout
-* [x] Current user
-* [x] Change password
-* [x] Email verification
-* [x] Password recovery
-* [x] Password reset
-
-### 📁 Project Management
-
-* [x] Project models
-* [x] Project controllers
-* [x] Create projects
-* [x] Retrieve projects
-* [x] Update projects
-* [x] Delete projects
-* [x] Project aggregation
-* [x] Project validators
-* [x] Project routes
-* [x] Project permissions
-* [x] Project member management
-
-### 🛡️ Authorization
-
-* [x] Admin permissions
-* [x] Project admin permissions
-* [x] Member permissions
-* [x] Role-based authorization
-* [x] Protected project routes
-* [x] Project-level access control
-* [x] Task-level access control
-
-### 📋 Task Management
-
-* [x] Task controllers
-* [x] Task creation
-* [x] Task retrieval
-* [x] Task updates
-* [x] Task deletion
-* [x] Task population
-* [x] Task aggregation
-* [x] Task permissions
-
-### ☑️ Subtasks
-
-* [x] Subtask creation
-* [x] Subtask retrieval
-* [x] Subtask updates
-* [x] Subtask deletion
-* [x] Subtask status management
-
-### 📎 File Management
-
-* [x] Multer integration
-* [x] File upload handling
-* [x] Task attachment support
-
-### 📝 Notes
-
-* [x] Note management
-* [x] Note retrieval
-* [x] Note updates
-* [x] Note deletion
-* [x] Note permissions
-
-### 🏗️ Infrastructure
-
-* [x] Express setup
-* [x] MongoDB integration
-* [x] Mongoose integration
-* [x] API versioning
-* [x] Middleware architecture
-* [x] Controller architecture
-* [x] Route architecture
-* [x] Validator architecture
-* [x] Health-check endpoint
+- JWT-based authentication with refresh tokens
+- Role-based authorization
+- Request validation
+- Email verification
+- Password reset
+- bcrypt password hashing
+- CORS configuration
+- Secure file upload handling with Multer
+- Protected project and task routes
 
 ---
 
-## 📜 License
+## Current Status
+
+The core authentication and project-management layers are implemented.
+
+The current implementation has progressed into task management, including task controller structure, task creation, task listing, population, and aggregation-based task retrieval.
+
+The remaining work follows the feature scope defined in the [PRD](./PRD.md).
+
+---
+
+## Roadmap
+
+- [x] User authentication
+- [x] Email verification
+- [x] Password management
+- [x] JWT access and refresh tokens
+- [x] Project management
+- [x] Project aggregation
+- [x] Project validation
+- [x] Project member management
+- [x] Role-based permissions
+- [x] Project routes
+- [x] Task controller foundation
+- [x] Task creation
+- [x] Task listing
+- [x] Task population
+- [x] Task retrieval and aggregation
+- [x] Multer file upload foundation
+- [ ] Task updates
+- [ ] Task deletion
+- [ ] Subtask management
+- [ ] Project notes
+- [ ] Final API integration
+
+---
+
+## License
 
 ISC
 
 ---
 
-## 👨‍💻 Author
-
-**itsjazzkun**
-
-<p align="center">
-  Built with Node.js, Express and MongoDB.
-</p>
-```
+Built with Node.js, Express and MongoDB.
