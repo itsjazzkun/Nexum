@@ -1,4 +1,4 @@
-````md
+
 # Nexum
 
 <p align="center">
@@ -161,7 +161,7 @@ Nexum implements role-based permissions across the application.
               ┌─────┴─────┐
               ▼           ▼
            Projects      Tasks
-```
+
 
 ---
 
