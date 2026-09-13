@@ -9,12 +9,6 @@
   A RESTful backend API for collaborative project management.
 </p>
 
-<p align="center">
-  <img src="https://img.shields.io/github/license/itsjazzkun/Nexum?style=flat-square" />
-  <img src="https://img.shields.io/github/stars/itsjazzkun/Nexum?style=flat-square" />
-  <img src="https://img.shields.io/github/forks/itsjazzkun/Nexum?style=flat-square" />
-</p>
-
 ---
 
 ## 🧩 Overview
